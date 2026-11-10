@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="An interactive hair dryer model with airflow, temperature, cool shot, and overheat protection states.">
+  <title>AirLoop · Interactive Hair Dryer</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="#simulator" aria-label="Back to the simulator">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span>AirLoop <small>Interactive Model</small></span>
+      </a>
+      <div class="top-actions">
+        <span class="connection" id="connectionBadge"><i></i> Power connected</span>
+        <button class="text-button" id="plugButton" type="button" aria-pressed="true">Unplug</button>
+      </div>
+    </header>
+
+    <section class="hero" id="simulator">
+      <div class="intro">
+        <p class="eyebrow">DEVICE STATE LAB · 01</p>
+        <h1>Feel the air,<br><em>see the state.</em></h1>
+        <p class="lede">A hair dryer model built around realistic operating logic. Airflow and heat are controlled independently, temperature changes gradually, and Cool Shot temporarily overrides heat only while held.</p>
+        <div class="quick-guide" aria-label="Quick start guide">
+          <span><kbd>1</kbd> Turn on the power</span>
+          <span><kbd>2</kbd> Choose airflow and heat</span>
+          <span><kbd>3</kbd> Hold the blue Cool Shot button</span>
+        </div>
+      </div>
+
+      <div class="device-stage" aria-label="Interactive hair dryer model">
+        <div class="air-stream" id="airStream" aria-hidden="true">
+          <i></i><i></i><i></i><i></i><i></i>
+        </div>
+        <div class="dryer" id="dryer">
+          <div class="dryer-head">
+            <div class="copper-ring">
+              <div class="air-channel">
+                <div class="thermal-halo" id="thermalHalo"></div>
+                <span class="center-cap">AL</span>
+              </div>
+              <div class="head-lights" aria-label="Heat level indicators">
+                <i data-heat-light="0"></i>
+                <i data-heat-light="1"></i>
+                <i data-heat-light="2"></i>
+                <i data-heat-light="3"></i>
+              </div>
+            </div>
+          </div>
+          <div class="dryer-handle">
+            <div class="handle-controls">
+              <button class="round-button power-button" id="powerButton" type="button" aria-label="Turn on" aria-pressed="false">
+                <span aria-hidden="true">⏻</span>
+              </button>
+              <span class="control-caption">POWER</span>
+              <button class="round-button cool-button" id="coolButton" type="button" aria-label="Hold for Cool Shot" disabled>
+                <span class="snow" aria-hidden="true">✦</span>
+              </button>
+              <span class="control-caption">HOLD TO COOL</span>
+            </div>
+            <div class="handle-vent" aria-hidden="true"></div>
+          </div>
+          <div class="cord" aria-hidden="true"></div>
+        </div>
+        <p class="device-hint" id="deviceHint">Press the power button to begin</p>
+      </div>
+
+      <aside class="status-card" aria-live="polite">
+        <div class="status-heading">
+          <div>
+            <p>CURRENT STATE</p>
+            <h2 id="stateLabel">Off</h2>
+          </div>
+          <span class="status-dot" id="statusDot"></span>
+        </div>
+
+        <div class="temperature-readout">
+          <div class="temperature-number"><span id="actualTemp">24</span><sup>°C</sup></div>
+          <div class="temperature-meta">
+            <span>Simulated outlet temperature</span>
+            <strong id="targetTemp">Target 24°C</strong>
+          </div>
+          <div class="temperature-track"><i id="temperatureFill"></i></div>
+        </div>
+
+        <div class="output-grid">
+          <div class="output-item">
+            <span>FAN OUTPUT</span>
+            <div class="mini-bars" id="fanBars"><i></i><i></i><i></i></div>
+            <strong id="fanOutput">0%</strong>
+          </div>
+          <div class="output-item">
+            <span>HEATER</span>
+            <div class="mini-bars heat-bars" id="heaterBars"><i></i><i></i><i></i></div>
+            <strong id="heaterOutput">Off</strong>
+          </div>
+        </div>
+
+        <div class="setting-group">
+          <div class="setting-title"><span>AIRFLOW</span><strong id="speedLabel">Medium</strong></div>
+          <div class="segmented" id="speedControl" role="group" aria-label="Airflow setting">
+            <button type="button" data-speed="0">Low</button>
+            <button type="button" data-speed="1" class="active">Med</button>
+            <button type="button" data-speed="2">High</button>
+          </div>
+        </div>
+
+        <div class="setting-group">
+          <div class="setting-title"><span>HEAT</span><strong id="heatLabel">Medium heat</strong></div>
+          <div class="segmented heat-control" id="heatControl" role="group" aria-label="Heat setting">
+            <button type="button" data-heat="0">Cool</button>
+            <button type="button" data-heat="1">Low</button>
+            <button type="button" data-heat="2" class="active">Med</button>
+            <button type="button" data-heat="3">High</button>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="lab-panel" aria-labelledby="labTitle">
+      <div class="lab-copy">
+        <p class="eyebrow">BEHAVIOR MONITOR</p>
+        <h2 id="labTitle">Device behavior monitor</h2>
+        <p>Values are approximate and intended for demonstration only. Use accelerated heating to trigger overheat protection.</p>
+      </div>
+      <div class="monitor-grid">
+        <article>
+          <span class="monitor-icon fan-icon" id="fanIcon" aria-hidden="true">✣</span>
+          <div><small>FAN</small><strong id="fanState">Stopped</strong></div>
+        </article>
+        <article>
+          <span class="monitor-icon heater-icon" id="heaterIcon" aria-hidden="true">≋</span>
+          <div><small>HEATER</small><strong id="heaterState">Off</strong></div>
+        </article>
+        <article>
+          <span class="monitor-icon safety-icon" aria-hidden="true">◇</span>
+          <div><small>SAFETY</small><strong id="safetyState">Standby</strong></div>
+        </article>
+      </div>
+      <div class="test-controls">
+        <label class="switch-row">
+          <span><strong>Accelerated overheat test</strong><small>Builds heat faster on the High setting</small></span>
+          <input type="checkbox" id="stressToggle">
+          <i aria-hidden="true"></i>
+        </label>
+        <button class="reset-button" id="resetButton" type="button">Reset simulation</button>
+      </div>
+      <ol class="event-log" id="eventLog" aria-label="Recent events">
+        <li><time>00:00</time><span>Simulator ready</span></li>
+      </ol>
+    </section>
+  </main>
+
+  <div class="protection-overlay" id="protectionOverlay" role="alert" aria-hidden="true">
+    <div class="protection-dialog">
+      <span class="warning-symbol" aria-hidden="true">!</span>
+      <p>SAFETY INTERRUPT</p>
+      <h2>Overheat protection active</h2>
+      <span>The heater is locked off. While plugged in, the fan actively cools the device until it reaches a safe temperature.</span>
+      <button id="acknowledgeButton" type="button">Continue monitoring</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
